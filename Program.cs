@@ -131,6 +131,36 @@ public decimal GetTotalByCategory(string category, TransactionType type)
                 ? Transactions.OrderBy(t => t.Date).ToList()
                 : Transactions.OrderByDescending(t => t.Date).ToList();
         }
+public List<Transaction> SortTransactionsByAmount(bool ascending = true)
+        {
+            return ascending
+                ? Transactions.OrderBy(t => t.Amount).ToList()
+                : Transactions.OrderByDescending(t => t.Amount).ToList();
+        }
+ public List<Transaction> SortTransactionsByCategory()
+        {
+            return Transactions.OrderBy(t => t.Category).ToList();
+        }
+ public string GenerateCategoryChart(TransactionType type)
+        {
+            var categoryBreakdown = GetCategoryBreakdown(type);
+            if (categoryBreakdown.Count == 0)
+                return "No data available for chart.";
 
+            decimal total = categoryBreakdown.Values.Sum();
+            int chartWidth = 40;
+            string result = $"\n{(type == TransactionType.Income ? "Income" : "Expense")} Category Breakdown:\n";
+
+            foreach (var category in categoryBreakdown.OrderByDescending(kvp => kvp.Value))
+            {
+                decimal percentage = category.Value / total * 100;
+                int barLength = (int)Math.Round(percentage * chartWidth / 100);
+                string bar = new string('█', barLength);
+
+                result += $"{category.Key,-15} {category.Value,10:C} ({percentage,5:F1}%) {bar}\n";
+            }
+
+            return result;
+        }
 
 
