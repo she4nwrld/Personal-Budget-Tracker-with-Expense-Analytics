@@ -94,6 +94,24 @@ public decimal GetTotalByCategory(string category, TransactionType type)
                 .Where(t => t.Category.Equals(category, StringComparison.OrdinalIgnoreCase) && t.Type == type)
                 .Sum(t => t.Amount);
         }
-      
+       public List<string> GetAllCategories()
+        {
+            return Transactions
+                .Select(t => t.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+        }
+ public Dictionary<string, decimal> GetCategoryBreakdown(TransactionType type)
+        {
+            return Transactions
+                .Where(t => t.Type == type)
+                .GroupBy(t => t.Category)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Sum(t => t.Amount)
+                );
+        }
+
 
 
