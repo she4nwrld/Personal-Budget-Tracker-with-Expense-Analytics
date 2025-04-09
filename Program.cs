@@ -54,3 +54,38 @@ public Transaction(string description, decimal amount, TransactionType type, str
      {
          Transactions = new List<Transaction>();
      }
+     public void AddTransaction(Transaction transaction)
+   {
+     if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            Transactions.Add(transaction);
+        }
+      public decimal CalculateTotalIncome()
+        {
+         return Transactions
+                .Where(t => t.Type == TransactionType.Income)
+                .Sum(t => t.Amount);
+        }
+public decimal CalculateTotalExpenses()
+        {
+return Transactions
+                .Where(t => t.Type == TransactionType.Expense)
+                .Sum(t => t.Amount);
+        }
+public decimal CalculateNetSavings()
+        {
+return CalculateTotalIncome() - CalculateTotalExpenses();
+        }
+public List<Transaction> GetTransactionsByCategory(string category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                throw new ArgumentException("Category cannot be empty", nameof(category));
+   return Transactions
+                .Where(t => t.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+      
+
+
