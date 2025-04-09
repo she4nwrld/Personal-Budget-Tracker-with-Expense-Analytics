@@ -162,5 +162,98 @@ public List<Transaction> SortTransactionsByAmount(bool ascending = true)
 
             return result;
         }
+ public string GenerateMonthlyReport()
+        {
+            var monthlyData = Transactions
+                .GroupBy(t => new { t.Date.Year, t.Date.Month })
+                .OrderBy(g => g.Key.Year)
+                .ThenBy(g => g.Key.Month)
+                .Select(g => new
+                {
+                    YearMonth = $"{g.Key.Year}-{g.Key.Month:D2}",
+                    Income = g.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount),
+                    Expenses = g.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount)
+                })
+                .ToList();
+
+            if (monthlyData.Count == 0)
+                return "No data available for monthly report.";
+
+            string report = "\nMonthly Summary:\n";
+            report += "Month      | Income      | Expenses     | Savings\n";
+            report += "-------------------------------------------------------\n";
+
+            foreach (var month in monthlyData)
+            {
+                decimal savings = month.Income - month.Expenses;
+                report += $"{month.YearMonth} | {month.Income,11:C} | {month.Expenses,11:C} | {savings,11:C}\n";
+            }
+
+            return report;
+        }
+    }
+   
+class Program
+    {
+        private static BudgetTracker budgetTracker = new BudgetTracker();
+
+        static void Main(string[] args)
+        {
+            bool running = true;
+
+            while (running)
+            {
+                Console.Clear();
+                Console.WriteLine("==== Personal Budget Tracker ====");
+                Console.WriteLine("1. Add Income");
+                Console.WriteLine("2. Add Expense");
+                Console.WriteLine("3. View All Transactions");
+                Console.WriteLine("4. View Financial Summary");
+                Console.WriteLine("5. View Category Analysis");
+                Console.WriteLine("6. View Monthly Report");
+                Console.WriteLine("7. Exit");
+                Console.Write("\nSelect an option: ");
+
+                try
+                {
+                    string input = Console.ReadLine();
+                    switch (input)
+                    {
+                        case "1":
+                            AddTransaction(TransactionType.Income);
+                            break;
+                        case "2":
+                            AddTransaction(TransactionType.Expense);
+                            break;
+                        case "3":
+                            ViewAllTransactions();
+                            break;
+                        case "4":
+                            ViewFinancialSummary();
+                            break;
+                        case "5":
+                            ViewCategoryAnalysis();
+                            break;
+                        case "6":
+                            ViewMonthlyReport();
+                            break;
+                        case "7":
+                            running = false;
+                            Console.WriteLine("Thank you for using Personal Budget Tracker!");
+                            break;
+                        default:
+                            Console.WriteLine("Invalid option. Press any key to continue...");
+                            Console.ReadKey();
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadKey();
+                }
+            }
+        }
 
 
