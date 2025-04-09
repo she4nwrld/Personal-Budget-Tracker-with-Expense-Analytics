@@ -85,7 +85,15 @@ public List<Transaction> GetTransactionsByCategory(string category)
                 .Where(t => t.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
+public decimal GetTotalByCategory(string category, TransactionType type)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                throw new ArgumentException("Category cannot be empty", nameof(category));
 
+            return Transactions
+                .Where(t => t.Category.Equals(category, StringComparison.OrdinalIgnoreCase) && t.Type == type)
+                .Sum(t => t.Amount);
+        }
       
 
 
