@@ -112,6 +112,25 @@ public decimal GetTotalByCategory(string category, TransactionType type)
                     group => group.Sum(t => t.Amount)
                 );
         }
+ public (string Category, decimal Amount) GetHighestSpendingCategory()
+        {
+            var expensesByCategory = GetCategoryBreakdown(TransactionType.Expense);
+
+            if (expensesByCategory.Count == 0)
+                return ("None", 0);
+
+            var highestCategory = expensesByCategory
+                .OrderByDescending(kvp => kvp.Value)
+                .First();
+
+            return (highestCategory.Key, highestCategory.Value);
+        }
+ public List<Transaction> SortTransactionsByDate(bool ascending = true)
+        {
+            return ascending
+                ? Transactions.OrderBy(t => t.Date).ToList()
+                : Transactions.OrderByDescending(t => t.Date).ToList();
+        }
 
 
 
