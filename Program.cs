@@ -94,7 +94,7 @@ namespace PersonalBudgetTracker
                 decimal percentage = category.Value / total * 100;
                 int barLength = (int)Math.Round(percentage * chartWidth / 100);
                 string bar = new string('█', barLength);
-                result += $"{category.Key,-15} {category.Value,10:C} ({percentage,5:F1}%) {bar}\n";
+                result += $"{category.Key,-15} {category.Value,10:C} ({percentage,5:F1}%) {bar}\n\n";
             }
             return result;
         }
